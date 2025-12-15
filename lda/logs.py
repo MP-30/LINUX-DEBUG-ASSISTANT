@@ -1,14 +1,12 @@
 import asyncio
+import asyncio.subprocess
+from lda.commands import Commands
+
 
 async def journal_errors():
     try:
         process = await asyncio.create_subprocess_exec(
-            "journalctl", 
-            "-p", 
-            "3", 
-            "-n" , 
-            "50",
-            "--no-pager",
+            *Commands.JOURNAL_ERRORS,
             stdout=asyncio.subprocess.PIPE, 
             stderr=asyncio.subprocess.PIPE, 
         )

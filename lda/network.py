@@ -1,5 +1,6 @@
 import asyncio
 import asyncio.subprocess
+from lda.commands import Commands
 
 async def _run_command_async(command_list):
     command_name = command_list[0]
@@ -22,10 +23,10 @@ async def _run_command_async(command_list):
     
         
 async def check_dns():
-    return await _run_command_async(["getent", "hosts", "google.com"])
+    return await _run_command_async(Commands.DNS_GOOGLE)
     
 async def ping_test():
-    return await _run_command_async(["ping", "-c", "1", "8.8.8.8"])
+    return await _run_command_async(Commands.PING_GOOGLE)
         
     
 async def network_info():
