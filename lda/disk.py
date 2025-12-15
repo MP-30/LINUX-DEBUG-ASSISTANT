@@ -1,6 +1,9 @@
 import psutil
+from aiopsutil import AsyncPSUtil
 
-def disk_info():
+async def disk_info():
+    aps = AsyncPSUtil()
+    # disk = await aps.disk_usage('/')
     disk = psutil.disk_usage('/')
     
     return {

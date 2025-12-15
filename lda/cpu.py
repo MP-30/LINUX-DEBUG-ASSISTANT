@@ -1,9 +1,11 @@
 import psutil
+from aiopsutil import AsyncPSUtil
 
-def cpu_info():
+async def cpu_info():
+    aps = AsyncPSUtil()
     return {
-        "usage_percent": psutil.cpu_percent(interval=1),
+        "usage_percent": await aps.cpu_percent(interval=1),
         "core_count": psutil.cpu_count(),
-        "load_avg": psutil.getloadavg()
+        "load_avg": await aps.getloadavg()
     }
     

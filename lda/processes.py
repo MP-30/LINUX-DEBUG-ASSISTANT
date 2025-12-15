@@ -1,11 +1,36 @@
 import psutil
+import asyncio
 
-def top_process():
-    processes = [(p.pid, 
-                  p.info["cpu_percent"],
-                  p.info["name"])
-                 for p in psutil.process_iter(['cpu_percent', 'name'])
-                ]
-    top = max(processes, key=lambda x: x[1])
-    return {"pid": top[0], "cpu": top[1], "name":top[2]}
 
+def _get_top_processes(limit=3):
+    processes = []
+
+    for p in psutil.process_iter(['pid', 'name', 'cpu_percent']):
+        try:
+            cpu = p.info['cpu_percent']
+            if cpu > 0:
+                processes.append(
+                    {"pid": p.pid, "cpu": cpu, "name": p.info["name"]}
+                )
+        except (psutil.NoSuchProcess, psutil.AccessDenied):
+            continue
+
+    # Sort descending by CPU usage
+    processes.sort(key=lambda x: x["cpu"], reverse=True)
+
+    return processes[:limit]
+
+
+async def top_processes(limit=3):
+    """
+    Returns top N CPU-consuming processes (async-safe)
+    """
+    # Initialize CPU counters
+    psutil.cpu_percent(interval=None)
+    for p in psutil.process_iter():
+        p.cpu_percent(interval=None)
+
+    # Sampling window
+    await asyncio.sleep(0.5)
+
+    return await asyncio.to_thread(_get_top_processes, limit)

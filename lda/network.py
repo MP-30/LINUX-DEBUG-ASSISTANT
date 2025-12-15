@@ -1,21 +1,41 @@
-import subprocess
+import asyncio
+import asyncio.subprocess
 
-def check_dns():
+async def _run_command_async(command_list):
+    command_name = command_list[0]
     try:
-        subprocess.check_output(["systemmd-resolve", "--status"])
-        return "OK"
-    except:
-        return "Failed"
-    
-def ping_test():
-    try:
-        subprocess.check_output(["ping", "-c", "1", "8.8.8.8"])
-        return "OK"
+        process = await  asyncio.create_subprocess_exec(
+            *command_list, 
+            stdout=asyncio.subprocess.DEVNULL,
+            stderr=asyncio.subprocess.DEVNULL,
+        )
+        await process.wait()
         
-    except: return "Failed"
+        if process.returncode ==0:
+            return 'OK'
+        else:
+            return f"Failed (Exit code {process.returncode})"
+    except FileNotFoundError:
+        return f"Failed (Command not found: '{command_name}')"
+    except Exception as e:
+        return f"Failed (Unexpected error: {type(e).__name__})"
     
-def network_info():
-    return {"dns": check_dns(),
-            "ping_google": ping_test()    
-        }
+        
+async def check_dns():
+    return await _run_command_async(["getent", "hosts", "google.com"])
+    
+async def ping_test():
+    return await _run_command_async(["ping", "-c", "1", "8.8.8.8"])
+        
+    
+async def network_info():
+    dns_status, ping_status = await asyncio.gather(
+        check_dns(),
+        ping_test(),
+    )
+    
+    return {
+        "dns": dns_status,
+        "ping_google": ping_status,
+    }
     
