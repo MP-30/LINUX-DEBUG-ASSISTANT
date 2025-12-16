@@ -17,5 +17,6 @@ async def get_summary():
     return await full_summary()
 
 @app.get("/debug")
-def debug():
-    return {"analysis": llm_debug(full_summary())}
+async def debug():
+    summary = await full_summary()
+    return {"analysis": llm_debug(summary)}
