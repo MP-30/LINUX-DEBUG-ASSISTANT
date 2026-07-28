@@ -6,7 +6,7 @@ from lda.llm import llm_debug
 
 # load_dotenv()
 
-app = FastAPI()
+app = FastAPI(title="Linux Debug Assistant")
 
 @app.get('/')
 async def to_check():
