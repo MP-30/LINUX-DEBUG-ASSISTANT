@@ -1,1 +1,2 @@
-My Project
+This project is a AIOps and i am converting it into RAG. Purpose of this project is to help user in debugging with the help of AI assistance.
+I am using LLM in this project.
